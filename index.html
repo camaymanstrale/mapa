@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S_Y_S_T_E_M_99</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --moth-orange: #f39c12;
+            /* Smrtihlav žluto-oranžová */
+            --grid: #1a1a1a;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 10px;
+            background-color: black;
+            color: #888;
+            font-family: 'Courier New', monospace;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Pozadí s padajícími motýly a rušením */
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            /* Pozadí */
+            opacity: 1;
+            /* Plné krytí, JavaScript si řídí průhlednost prvků */
+        }
+
+        .container {
+
+            position: relative;
+            z-index: 2;
+            /* UI vrstva nad canvasem */
+            text-align: center;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 14px;
+            letter-spacing: 10px;
+            color: var(--moth-orange);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        /* SCHEMATICKÁ MAPA */
+        .map-blueprint {
+            width: 450px;
+            height: 600px;
+            border: 1px solid #ffbb00;
+            background-image:
+                linear-gradient(var(--grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+            background-size: 45px 45px;
+            position: relative;
+            background-color: rgba(40, 40, 40, 0.80);
+            /* Trochu tmavší pro lepší kontrast */
+        }
+
+        /* Jednoduché tvary nábytku */
+        .office-shape {
+            position: absolute;
+            border: 1.7px solid #000000;
+            background: rgb(20, 20, 20);
+        }
+
+        /* TARGET: LEBKA SMRTISHLAVA */
+        .target-skull {
+            position: absolute;
+            font-size: 28px;
+            /* Trochu větší */
+            color: var(--moth-orange);
+            cursor: pointer;
+            text-shadow: 0 0 15px var(--moth-orange);
+            animation: blink 2s infinite;
+            z-index: 10;
+            top: 85%;
+            left: 95%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 0.5;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+        }
+
+        #info-panel {
+            margin-top: 5px;
+            font-size: 12px;
+            letter-spacing: 2px;
+            height: 40px;
+
+        }
+
+        .success-msg {
+            margin-left: 657px;
+            margin-top: -110px;
+            color: #fff;
+            border: 1px solid var(--moth-orange);
+            padding: 10px;
+            display: none;
+            background: rgba(243, 156, 18, 0.1);
+        }
+
+        /* --- ANIMACE PRO STATUS BAR --- */
+        #status {
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 3px solid var(--orange);
+            /* Silnější kurzor */
+            box-sizing: border-box;
+            width: 0;
+
+            /* Celý cyklus: 4 vteřiny (1s ticho, 1s psaní, 2s svícení) */
+            /* steps(25) odpovídá počtu znaků v "LOCATE BIOMETRIC SIGNAL..." */
+            animation:
+                typing-status 4s steps(25, end) infinite,
+                blink-caret-slow 1.2s step-end infinite;
+        }
+
+        /* ROZPIS ČASU (4s celkem):
+   0% - 25% (1s): Ticho, jen bliká kurzor
+   25% - 50% (1s): Text se vypisuje
+   50% - 100% (2s): Text zůstane vypsaný
+*/
+        @keyframes typing-status {
+
+            0%,
+            25% {
+                width: 0;
+            }
+
+            50%,
+            100% {
+                width: 100%;
+            }
+        }
+
+        /* Pomalejší blikání kurzoru (1.2s oproti původním 0.7s) */
+        @keyframes blink-caret-slow {
+
+            from,
+            to {
+                border-color: transparent;
+            }
+
+            50% {
+                border-color: var(--orange);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <div class="container">
+        <h1>Acherontia_Protocol</h1>
+
+
+        <div class="map-blueprint">
+            <div class="office-shape" style="width: 60px; height: 120px; top: 1px; left: 169px;">
+            </div>
+            <div class="office-shape" style="width: 60px; height: 120px; top: 1px; left: 231px;">
+            </div>
+            <div class="office-shape" style="width: 120px; height: 60px; bottom: 390px; left: 1px;">
+            </div>
+            <div class="office-shape" style="width: 120px; height: 60px; bottom: 328px; left: 1px;">
+            </div>
+            <div class="office-shape" style="width: 120px; height: 60px; bottom: 212px; left: 1px;">
+            </div>
+            <div class="office-shape" style="width: 120px; height: 60px; bottom: 149px; left: 1px;">
+            </div>
+            <div class="office-shape" style="width: 120px; height: 60px; bottom: 42px; left: 1px;">
+            </div>
+            <div class="office-shape" style="width: 120px; height: 60px; top: 157px; right: 1px;">
+            </div>
+            <div class="office-shape" style="width: 120px; height: 60px; top: 220px; right: 1px;">
+            </div>
+            <div class="office-shape"
+                style="width: 50px; height: 130px; top: 330px; right: 5px; opacity: 40%;"></div>
+
+            <div class="office-shape" style="width: 160px; height: 20px; top: 463px; right: 5px;">
+            </div>
+            <div class="office-shape" style="width: 30px; height: 25px; top: 463px; right: 5px;">
+            </div>
+
+            <div class="target-skull" onclick="reveal()">💀</div>
+        </div>
+
+        <div id="info-panel">
+            <div id="status">LOCATE BIOMETRIC SIGNAL...</div>
+            <div id="msg" class="success-msg">follow the arrows...</div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // NASTAVENÍ RUŠIVÝCH PRVKŮ
+        const particles = [];
+        const mothTypes = ["ʚϊɞ", "Ƹ̵̡Ӝ̵̨̄Ʒ", "†Ƹ̵̡Ӝ̵̨̄Ʒ†", "*•.Ƹ̵̡Ӝ̵̨̄Ʒ.•*", "ꕤ", "⋈"];
+        const glitchBlock = "▒";
+
+        // Proměnné pro persistentní vektorový glitch (Smrtihlav)
+        let vectorMothTimer = 0; // Odpočet, jak dlouho zůstane viditelný
+        let vectorMothPos = { x: 0, y: 0, size: 0 };
+        const MOTH_COLOR = "#f39c12"; // `--moth-orange`
+
+        class Moth {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.text = mothTypes[Math.floor(Math.random() * mothTypes.length)];
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.opacity = Math.random() * 0.5; // Jemnější na pozadí
+                this.fontSize = 16 + Math.random() * 8;
+            }
+
+            draw() {
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = "#333"; // Tmavě šedá pro padající kód
+                ctx.font = `${this.fontSize}px monospace`;
+                ctx.fillText(this.text, this.x, this.y);
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+        }
+
+        // Vytvoření padajících motýlů
+        for (let i = 0; i < 35; i++) {
+            particles.push(new Moth());
+        }
+
+        // FUNKCE PRO VYKRESLENÍ STYLIZOVANÉHO VEKTOROVÉHO SMRTIHLAVA
+        function drawVectorMoth(x, y, size, alpha) {
+            ctx.save();
+            ctx.translate(x, y);
+
+            // Mírné chvění (interfence)
+            const wiggle = (Math.random() - 0.5) * 3;
+            ctx.translate(wiggle, 0);
+
+            ctx.globalAlpha = alpha;
+            ctx.strokeStyle = MOTH_COLOR;
+            ctx.lineWidth = 1.5;
+            ctx.lineCap = "round";
+            ctx.beginPath();
+
+            // Stylizovaná kresba linkami (geometrický náčrt)
+            // Tělo a lebka na hrudi
+            ctx.moveTo(0, -size / 2); // Hlava
+            ctx.lineTo(size / 10, -size / 3);
+            ctx.lineTo(0, size / 2); // Zadeček
+            ctx.lineTo(-size / 10, -size / 3);
+            ctx.closePath();
+
+            // Lebka (kroužek na hrudi)
+            ctx.moveTo(size / 15, -size / 4);
+            ctx.arc(0, -size / 4, size / 15, 0, Math.PI * 2);
+
+            // Horní křídla (levé)
+            ctx.moveTo(-size / 10, -size / 3);
+            ctx.lineTo(-size, -size / 1.5); // Špička křídla
+            ctx.lineTo(-size / 2, size / 4);
+            ctx.lineTo(0, 0);
+
+            // Horní křídla (pravé)
+            ctx.moveTo(size / 10, -size / 3);
+            ctx.lineTo(size, -size / 1.5);
+            ctx.lineTo(size / 2, size / 4);
+            ctx.lineTo(0, 0);
+
+            // Spodní křídla (levé)
+            ctx.moveTo(-size / 10, 0);
+            ctx.lineTo(-size / 1.5, size / 3);
+            ctx.lineTo(-size / 4, size / 2);
+            ctx.lineTo(0, size / 4);
+
+            // Spodní křídla (pravé)
+            ctx.moveTo(size / 10, 0);
+            ctx.lineTo(size / 1.5, size / 3);
+            ctx.lineTo(size / 4, size / 2);
+            ctx.lineTo(0, size / 4);
+
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function animate() {
+            // 1. Čištění pozadí (mírně průhledné pro smývání)
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = "rgba(0, 0, 0, 0.1)"; // Vytváří efekt stop (trails)
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 2. Kreslení padajících motýlů (pozadí)
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            // 3. RUŠIVÝ PRVEK A: Persistentní Vektorový Smrtihlav
+            // Náhodné spuštění (pokud zrovna neběží)
+            if (vectorMothTimer <= 0 && Math.random() > 0.996) { // velmi malá šance na spuštění
+                vectorMothTimer = 180 + Math.random() * 120; // Zůstane 3-5 vteřin (při 60fps)
+                vectorMothPos = {
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: 80 + Math.random() * 70 // Velikost 80-150px
+                };
+            }
+
+            if (vectorMothTimer > 0) {
+                // Průhlednost se na konci odpočtu vytratí
+                let alpha = 0.6;
+                if (vectorMothTimer < 30) alpha = vectorMothTimer / 30 * 0.6;
+
+                // Občasné barevné probliknutí (interference)
+                if (Math.random() > 0.9) alpha = 1; // silný záblesk
+                if (Math.random() > 0.95) ctx.strokeStyle = "#fff"; // probliknutí do bílé
+                else ctx.strokeStyle = MOTH_COLOR;
+
+                drawVectorMoth(vectorMothPos.x, vectorMothPos.y, vectorMothPos.size, alpha);
+                vectorMothTimer--;
+            }
+
+            // 4. RUŠIVÝ PRVEK B: Rychlé Glitch bloky ▒ (Problikávání přes všechno)
+            if (Math.random() > 0.95) { // 5% šance na záblesk v každém snímku
+                ctx.globalAlpha = 0.8;
+                ctx.fillStyle = (Math.random() > 0.5) ? MOTH_COLOR : "#fff"; // Oranžová nebo bílá
+                ctx.font = "30px monospace";
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                // Vykreslí náhodný shluk bloků
+                ctx.fillText(glitchBlock.repeat(1 + Math.floor(Math.random() * 4)), x, y);
+
+                // Občas přidá horizontální "digitální zásek" (linku)
+                if (Math.random() > 0.7) {
+                    ctx.fillRect(0, y, canvas.width, 1);
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // LOGIKA HRY
+        function reveal() {
+            document.getElementById('status').style.display = 'none';
+            document.getElementById('msg').style.display = 'block';
+            const skull = document.querySelector('.target-skull');
+            skull.style.animation = 'none';
+            skull.style.color = '#fff';
+            skull.innerHTML = '🡆'; // Šipka místo původní fajfky
+        }
+
+        animate();
+    </script>
+
+</body>
+
+</html>

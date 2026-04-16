@@ -89,9 +89,9 @@
             text-shadow: 0 0 15px var(--moth-orange);
             animation: blink 2s infinite;
             z-index: 10;
-            top: 85%;
-            left: 95%;
-            transform: translate(-50%, -50%) !important;
+            top: 88%;
+            left: 97%;
+            transform: translate(-88%, -97%) !important;
         }
 
         @keyframes blink {
@@ -163,7 +163,7 @@
             }
         }
 
-        /* Pomalejší blikání kurzoru (1.2s oproti původním 0.7s) */
+        /* 1. Nejdřív uzavřeme animaci blikání */
         @keyframes blink-caret-slow {
 
             from,
@@ -174,35 +174,43 @@
             50% {
                 border-color: var(--orange);
             }
+        }
 
-            @media (max-width: 600px) {
-                #map-viewport {
-                    /* Zmenšíme celou mapu na 60 % původní velikosti */
-                    transform: scale(0.5);
+        /* <--- TAHLE ZÁVORKA TI TAM CHYBĚLA */
 
-                    /* Důležité: Určíme, odkud se má zmenšovat (střed shora) */
-                    transform-origin: top center;
+        /* 2. Až POTÉ může následovat media query pro mobily */
+        @media (max-width: 600px) {
+            #map-viewport {
+                /* Zmenšíme celou mapu na 50 % původní velikosti */
+                transform: scale(0.5);
+                transform-origin: top center;
 
-                    /* Protože scale() nemění fyzický prostor, který prvek zabírá, 
-           musíme trochu poladit šířku, aby se mapa vycentrovala */
-                    width: 166%;
-                    /* Kompenzace: 100 / 0.6 = cca 166 */
-                    margin-left: -33%;
-                    /* Posuneme ji zpět na střed */
+                /* Pokud používáš scale(0.5), pro přesné vycentrování 
+           použij tyto hodnoty: */
+                width: 200%;
+                /* 100 / 0.5 = 200 */
+                margin-left: -50%;
+                /* Aby to bylo na středu */
 
-                    /* Volitelné: Pokud je mapa moc dlouhá, můžeš omezit výšku */
-                    max-height: 400px;
-                }
-
-
+                max-height: 400px;
             }
+
+            /* Přidáme sem i tu opravu pro lebku/šipku, aby se neposouvala */
+            .target-skull {
+                position: absolute;
+                top: 88%;
+                left: 97%;
+                /* Tento řádek zajistí, že STŘED lebky i šipky je vždy na stejném místě */
+                transform: translate(-88%, -97%) !important;
+            }
+        }
     </style>
 </head>
 
 <body>
 
     <div id="map-viewport">
-        <div class="target-skull" id="target">...</div>
+
         <canvas id="canvas"></canvas>
 
 
